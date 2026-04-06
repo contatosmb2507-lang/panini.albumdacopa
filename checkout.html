@@ -1,0 +1,582 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Finalizar Compra - Panini FIFA World Cup 2026</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',sans-serif;background:#f4f4f4;color:#222}
+.co-header{background:#fff;border-bottom:2px solid #1a7a3c;padding:14px 24px;display:flex;align-items:center;gap:14px}
+.co-header a{text-decoration:none;color:#1a7a3c;font-weight:700;font-size:14px;display:flex;align-items:center;gap:6px}
+.co-header h1{font-size:18px;color:#222}
+
+/* Steps */
+.steps{display:flex;justify-content:center;gap:0;padding:24px 16px 0;max-width:700px;margin:0 auto}
+.step{flex:1;text-align:center;position:relative}
+.step:not(:last-child)::after{content:'';position:absolute;top:16px;left:50%;width:100%;height:2px;background:#ddd;z-index:0}
+.step.active:not(:last-child)::after,.step.done:not(:last-child)::after{background:#1a7a3c}
+.step-circle{width:32px;height:32px;border-radius:50%;background:#ddd;color:#fff;font-weight:700;font-size:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 6px;position:relative;z-index:1}
+.step.active .step-circle{background:#1a7a3c}
+.step.done .step-circle{background:#1a7a3c}
+.step-label{font-size:11px;color:#888}
+.step.active .step-label{color:#1a7a3c;font-weight:700}
+
+.co-wrap{max-width:960px;margin:24px auto;padding:0 16px;display:grid;grid-template-columns:1fr 360px;gap:24px}
+@media(max-width:720px){.co-wrap{grid-template-columns:1fr}}
+
+.co-card{background:#fff;border-radius:10px;padding:24px;box-shadow:0 1px 6px rgba(0,0,0,.08);margin-bottom:16px}
+.co-card h2{font-size:15px;color:#333;border-bottom:1px solid #eee;padding-bottom:12px;margin-bottom:18px}
+
+.co-field{margin-bottom:14px}
+.co-field label{display:block;font-size:12px;color:#555;margin-bottom:5px;font-weight:600}
+.co-field input,.co-field select{width:100%;padding:10px 12px;border:1px solid #ddd;border-radius:6px;font-size:14px;outline:none;transition:border-color .2s}
+.co-field input:focus,.co-field select:focus{border-color:#1a7a3c}
+.co-field input.error{border-color:#e00}
+.co-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.co-row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+
+/* Resumo */
+.co-item{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid #f0f0f0}
+.co-item img{width:52px;height:65px;object-fit:contain;background:#f8f8f8;border-radius:4px}
+.co-item-info{flex:1}
+.co-item-name{font-size:12px;color:#222;line-height:1.3}
+.co-item-qty{font-size:11px;color:#888;margin-top:3px}
+.co-item-price{font-weight:700;font-size:13px;white-space:nowrap}
+.co-totals-row{display:flex;justify-content:space-between;font-size:13px;padding:5px 0;color:#555}
+.co-totals-row.total{font-size:17px;font-weight:700;color:#1a1a1a;border-top:1px solid #eee;padding-top:10px;margin-top:6px}
+
+/* Botões */
+.btn-primary{display:block;width:100%;background:#1a7a3c;color:#fff;border:none;border-radius:6px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;transition:background .2s;margin-top:16px}
+.btn-primary:hover{background:#155f2f}
+.btn-primary:disabled{background:#aaa;cursor:not-allowed}
+.btn-secondary{background:none;border:1px solid #ccc;border-radius:6px;padding:10px 20px;font-size:14px;cursor:pointer;color:#555;margin-top:10px;width:100%}
+.btn-secondary:hover{background:#f5f5f5}
+
+/* Seções */
+.section{display:none}
+.section.active{display:block}
+
+/* Modal PIX */
+#pix-modal{display:none;position:fixed;inset:0;z-index:9999;align-items:center;justify-content:center}
+#pix-modal.open{display:flex}
+#pix-overlay{position:absolute;inset:0;background:rgba(0,0,0,.55)}
+#pix-box{position:relative;background:#fff;border-radius:12px;padding:32px 28px;max-width:440px;width:90%;z-index:1;text-align:center;box-shadow:0 8px 40px rgba(0,0,0,.2)}
+#pix-box h2{font-size:18px;margin-bottom:6px;color:#1a1a1a}
+#pix-box .pix-amount{font-size:28px;font-weight:700;color:#1a7a3c;margin:8px 0 16px}
+#pix-qr{width:200px;height:200px;margin:0 auto 16px;border:1px solid #eee;border-radius:8px;overflow:hidden;background:#f8f8f8;display:flex;align-items:center;justify-content:center}
+#pix-qr img{width:100%;height:100%;object-fit:contain}
+.pix-copy-wrap{display:flex;gap:8px;margin:12px 0}
+#pix-copy-input{flex:1;padding:10px;border:1px solid #ddd;border-radius:6px;font-size:12px;background:#f9f9f9;color:#333;word-break:break-all}
+#pix-copy-btn{padding:10px 14px;background:#1a7a3c;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:13px;white-space:nowrap}
+#pix-copy-btn:hover{background:#155f2f}
+.pix-timer{font-size:13px;color:#888;margin-top:8px}
+.pix-timer span{font-weight:700;color:#e00}
+.pix-status-msg{margin-top:12px;font-size:14px;padding:10px;border-radius:6px;display:none}
+.pix-status-msg.paid{background:#e8f5e9;color:#1a7a3c;display:block}
+.pix-status-msg.expired{background:#ffeaea;color:#c00;display:block}
+#pix-close{position:absolute;top:12px;right:14px;background:none;border:none;font-size:20px;cursor:pointer;color:#888}
+#pix-close:hover{color:#333}
+
+/* Debug removido */
+
+/* Sucesso */
+#co-success{display:none;text-align:center;padding:40px 20px}
+#co-success svg{margin:0 auto 16px}
+#co-success h2{color:#1a7a3c;margin-bottom:8px}
+#co-success p{color:#555}
+</style>
+</head>
+<body>
+
+<header class="co-header">
+  <a href="index.html">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+    Voltar
+  </a>
+  <h1>Finalizar Compra</h1>
+</header>
+
+<!-- Steps -->
+<div class="steps" id="steps-bar">
+  <div class="step active" id="step-1">
+    <div class="step-circle">1</div>
+    <div class="step-label">Dados</div>
+  </div>
+  <div class="step" id="step-2">
+    <div class="step-circle">2</div>
+    <div class="step-label">Entrega</div>
+  </div>
+  <div class="step" id="step-3">
+    <div class="step-circle">3</div>
+    <div class="step-label">Pagamento</div>
+  </div>
+</div>
+
+<div class="co-wrap">
+  <div>
+
+    <!-- ETAPA 1: Dados pessoais -->
+    <div class="co-card section active" id="section-1">
+      <h2>Dados pessoais</h2>
+      <div class="co-field">
+        <label>Nome completo *</label>
+        <input type="text" id="co-name" placeholder="Seu nome completo">
+      </div>
+      <div class="co-row">
+        <div class="co-field">
+          <label>E-mail *</label>
+          <input type="email" id="co-email" placeholder="seu@email.com">
+        </div>
+        <div class="co-field">
+          <label>Telefone *</label>
+          <input type="text" id="co-phone" placeholder="(11) 99999-9999" maxlength="15">
+        </div>
+      </div>
+      <div class="co-field">
+        <label>CPF *</label>
+        <input type="text" id="co-cpf" placeholder="000.000.000-00" maxlength="14">
+      </div>
+      <button class="btn-primary" onclick="goStep(2)">Continuar →</button>
+    </div>
+
+    <!-- ETAPA 2: Endereço -->
+    <div class="co-card section" id="section-2">
+      <h2>Endereço de entrega</h2>
+      <div class="co-row">
+        <div class="co-field">
+          <label>CEP *</label>
+          <input type="text" id="co-cep" placeholder="00000-000" maxlength="9" oninput="onCepInput(this)">
+        </div>
+        <div class="co-field" style="display:flex;align-items:flex-end">
+          <button class="btn-secondary" style="margin:0" onclick="fetchCep()">Buscar CEP</button>
+        </div>
+      </div>
+      <div id="cep-loading" style="font-size:12px;color:#888;display:none">Buscando CEP...</div>
+      <div class="co-field">
+        <label>Rua *</label>
+        <input type="text" id="co-street" placeholder="Rua, Avenida...">
+      </div>
+      <div class="co-row">
+        <div class="co-field">
+          <label>Número *</label>
+          <input type="text" id="co-num" placeholder="123">
+        </div>
+        <div class="co-field">
+          <label>Complemento</label>
+          <input type="text" id="co-comp" placeholder="Apto, Bloco...">
+        </div>
+      </div>
+      <div class="co-field">
+        <label>Bairro</label>
+        <input type="text" id="co-neighborhood" placeholder="Bairro">
+      </div>
+      <div class="co-row">
+        <div class="co-field">
+          <label>Cidade *</label>
+          <input type="text" id="co-city" placeholder="Cidade">
+        </div>
+        <div class="co-field">
+          <label>Estado *</label>
+          <select id="co-state">
+            <option value="">UF</option>
+            <option>AC</option><option>AL</option><option>AP</option><option>AM</option>
+            <option>BA</option><option>CE</option><option>DF</option><option>ES</option>
+            <option>GO</option><option>MA</option><option>MT</option><option>MS</option>
+            <option>MG</option><option>PA</option><option>PB</option><option>PR</option>
+            <option>PE</option><option>PI</option><option>RJ</option><option>RN</option>
+            <option>RS</option><option>RO</option><option>RR</option><option>SC</option>
+            <option>SP</option><option>SE</option><option>TO</option>
+          </select>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:4px">
+        <button class="btn-secondary" onclick="goStep(1)">← Voltar</button>
+        <button class="btn-primary" style="margin:0" onclick="goStep(3)">Continuar →</button>
+      </div>
+    </div>
+
+    <!-- ETAPA 3: Pagamento -->
+    <div class="co-card section" id="section-3">
+      <h2>Pagamento via PIX</h2>
+      <div style="background:#f0faf4;border:1px solid #b2dfcc;border-radius:8px;padding:16px;text-align:center;margin-bottom:16px">
+        <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin:0 auto 8px;display:block">
+          <rect width="48" height="48" rx="10" fill="#32BCAD" opacity=".15"/>
+          <path d="M17 17L23 23M23 23L29 17M23 23L17 29M23 23L29 29" stroke="#32BCAD" stroke-width="2.5" stroke-linecap="round"/>
+          <circle cx="23" cy="23" r="11" stroke="#32BCAD" stroke-width="2"/>
+        </svg>
+        <p style="font-size:14px;color:#1a7a3c;font-weight:700">Pagamento instantâneo via PIX</p>
+        <p style="font-size:12px;color:#555;margin-top:4px">Após confirmar, um QR Code será gerado para pagamento</p>
+      </div>
+
+      <div id="order-summary-payment" style="background:#f9f9f9;border-radius:6px;padding:12px;margin-bottom:16px;font-size:13px;color:#555"></div>
+
+      <div style="display:flex;gap:10px">
+        <button class="btn-secondary" onclick="goStep(2)">← Voltar</button>
+        <button class="btn-primary" style="margin:0" id="btn-pay" onclick="submitOrder()">Gerar PIX</button>
+      </div>
+
+
+    </div>
+
+    <!-- Sucesso -->
+    <div id="co-success" class="co-card">
+      <svg width="64" height="64" viewBox="0 0 64 64" fill="none" style="margin:0 auto">
+        <circle cx="32" cy="32" r="32" fill="#1a7a3c" opacity=".1"/>
+        <circle cx="32" cy="32" r="24" fill="#1a7a3c" opacity=".15"/>
+        <path d="M20 32L28 40L44 24" stroke="#1a7a3c" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <h2 style="color:#1a7a3c;margin:16px 0 8px">Pagamento confirmado!</h2>
+      <p style="color:#555">Seu pedido foi recebido. Em breve você receberá a confirmação por e-mail.</p>
+      <a href="index.html" style="display:inline-block;margin-top:20px;color:#1a7a3c;font-weight:700">Continuar comprando</a>
+    </div>
+
+  </div>
+
+  <!-- Resumo lateral -->
+  <div>
+    <div class="co-card">
+      <h2>Resumo do pedido</h2>
+      <div id="co-order-items"></div>
+      <div id="co-order-totals" style="margin-top:12px"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal PIX -->
+<div id="pix-modal">
+  <div id="pix-overlay" onclick="closePix()"></div>
+  <div id="pix-box">
+    <button id="pix-close" onclick="closePix()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <h2>Pague com PIX</h2>
+    <div class="pix-amount" id="pix-amount-display"></div>
+    <p style="font-size:12px;color:#888;margin-bottom:12px">Escaneie o QR Code ou copie o código abaixo</p>
+    <div id="pix-qr">
+      <img id="pix-qr-img" src="" alt="QR Code PIX">
+    </div>
+    <div class="pix-copy-wrap">
+      <input type="text" id="pix-copy-input" readonly placeholder="Código PIX Copia e Cola">
+      <button id="pix-copy-btn" onclick="copyPix()">Copiar</button>
+    </div>
+    <div class="pix-timer">Expira em: <span id="pix-countdown">--:--</span></div>
+    <div class="pix-status-msg" id="pix-status-msg"></div>
+  </div>
+</div>
+
+
+<script>
+// ============================================================
+// CHECKOUT - 3 etapas + PIX Veno
+// ============================================================
+
+var cart = [];
+var pixData = null;
+var countdownInterval = null;
+var statusInterval = null;
+
+// ---------- Init ----------
+(function(){
+  try { cart = JSON.parse(localStorage.getItem('local_cart') || '[]'); } catch(e){ cart = []; }
+  renderSummary();
+  renderPaymentSummary();
+  applyMasks();
+})();
+
+// ---------- Resumo ----------
+function fmt(v){ return 'R$ ' + parseFloat(v).toFixed(2).replace('.',','); }
+function getTotal(){ return cart.reduce(function(s,i){ return s + i.price * i.qty; }, 0); }
+
+function renderSummary(){
+  var el = document.getElementById('co-order-items');
+  var tot = document.getElementById('co-order-totals');
+  if(!el) return;
+  if(cart.length === 0){
+    el.innerHTML = '<p style="color:#888;text-align:center;font-size:13px">Carrinho vazio. <a href="index.html">Voltar</a></p>';
+    return;
+  }
+  el.innerHTML = cart.map(function(i){
+    return '<div class="co-item">'+
+      '<img src="'+i.img+'" alt="">'+
+      '<div class="co-item-info">'+
+        '<div class="co-item-name">'+i.name+'</div>'+
+        '<div class="co-item-qty">Qtd: '+i.qty+'</div>'+
+      '</div>'+
+      '<div class="co-item-price">'+fmt(i.price * i.qty)+'</div>'+
+    '</div>';
+  }).join('');
+  var total = getTotal();
+  tot.innerHTML =
+    '<div class="co-totals-row"><span>Subtotal</span><span>'+fmt(total)+'</span></div>'+
+    '<div class="co-totals-row"><span>Frete</span><span style="color:#1a7a3c">A calcular</span></div>'+
+    '<div class="co-totals-row total"><span>Total</span><span>'+fmt(total)+'</span></div>';
+}
+
+function renderPaymentSummary(){
+  var el = document.getElementById('order-summary-payment');
+  if(!el) return;
+  var total = getTotal();
+  el.innerHTML = '<strong>Total a pagar: '+fmt(total)+'</strong><br>'+
+    '<span style="font-size:11px">'+cart.length+' produto(s) no carrinho</span>';
+}
+
+// ---------- Steps ----------
+function goStep(n){
+  if(n > 1 && !validateStep(n-1)) return;
+
+  for(var i=1;i<=3;i++){
+    var sec = document.getElementById('section-'+i);
+    var st  = document.getElementById('step-'+i);
+    if(sec) sec.classList.toggle('active', i===n);
+    if(st){
+      st.classList.remove('active','done');
+      if(i === n) st.classList.add('active');
+      if(i < n)  st.classList.add('done');
+    }
+  }
+  window.scrollTo(0,0);
+}
+
+function validateStep(n){
+  var fields = {
+    1: ['co-name','co-email','co-cpf','co-phone'],
+    2: ['co-cep','co-street','co-num','co-city','co-state']
+  };
+  var required = fields[n];
+  if(!required) return true;
+  var ok = true;
+  required.forEach(function(id){
+    var el = document.getElementById(id);
+    if(!el) return;
+    if(!el.value.trim()){
+      el.classList.add('error');
+      ok = false;
+    } else {
+      el.classList.remove('error');
+    }
+  });
+  if(!ok) alert('Preencha todos os campos obrigatórios.');
+  return ok;
+}
+
+// ---------- CEP ----------
+function onCepInput(el){
+  var v = el.value.replace(/\D/g,'').slice(0,8);
+  el.value = v.replace(/(\d{5})(\d)/,'$1-$2');
+  if(v.length === 8) fetchCep();
+}
+
+function fetchCep(){
+  var cep = document.getElementById('co-cep').value.replace(/\D/g,'');
+  if(cep.length !== 8){ return; }
+  document.getElementById('cep-loading').style.display = 'block';
+  // Chama ViaCEP diretamente (funciona local e em produção)
+  fetch('https://viacep.com.br/ws/'+cep+'/json/')
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      document.getElementById('cep-loading').style.display = 'none';
+      if(d.erro){ return; }
+      setVal('co-street', d.logradouro);
+      setVal('co-neighborhood', d.bairro);
+      setVal('co-city', d.localidade);
+      var st = document.getElementById('co-state');
+      if(st) st.value = d.uf;
+      document.getElementById('co-num').focus();
+    })
+    .catch(function(){
+      document.getElementById('cep-loading').style.display = 'none';
+    });
+}
+
+function setVal(id, val){
+  var el = document.getElementById(id);
+  if(el && val) el.value = val;
+}
+
+// ---------- Máscaras ----------
+function applyMasks(){
+  var cpf = document.getElementById('co-cpf');
+  if(cpf) cpf.addEventListener('input', function(){
+    var v = this.value.replace(/\D/g,'').slice(0,11);
+    v = v.replace(/(\d{3})(\d)/,'$1.$2').replace(/(\d{3})(\d)/,'$1.$2').replace(/(\d{3})(\d{1,2})$/,'$1-$2');
+    this.value = v;
+  });
+  var ph = document.getElementById('co-phone');
+  if(ph) ph.addEventListener('input', function(){
+    var v = this.value.replace(/\D/g,'').slice(0,11);
+    v = v.replace(/(\d{2})(\d)/,'($1) $2').replace(/(\d{5})(\d)/,'$1-$2');
+    this.value = v;
+  });
+}
+
+// ---------- Debug (só console) ----------
+function debugLog(msg, isError){
+  console.log('[DEBUG]', msg);
+}
+
+// ---------- Submit ----------
+function submitOrder(){
+  if(!validateStep(1) || !validateStep(2)) return;
+
+  var btn = document.getElementById('btn-pay');
+  btn.disabled = true;
+  btn.textContent = 'Gerando PIX...';
+
+  var total = getTotal();
+  var amountCents = Math.round(total * 100);
+
+  var cpfRaw = document.getElementById('co-cpf').value.replace(/\D/g,'');
+  var phoneRaw = document.getElementById('co-phone').value.replace(/\D/g,'');
+  var cepRaw = document.getElementById('co-cep').value.replace(/\D/g,'');
+
+  var payload = {
+    amount: amountCents,
+    description: 'Pedido Panini FIFA World Cup 2026 - '+cart.map(function(i){return i.name.substring(0,20);}).join(', '),
+    external_id: 'order-'+Date.now(),
+    payer: {
+      name:     document.getElementById('co-name').value.trim(),
+      email:    document.getElementById('co-email').value.trim(),
+      document: cpfRaw || '00000000000',
+      phone:    phoneRaw || '11999999999',
+      address:  (document.getElementById('co-street').value.trim() + ', ' + document.getElementById('co-num').value.trim()).trim() || 'Rua Exemplo, 123',
+      city:     document.getElementById('co-city').value.trim() || 'São Paulo',
+      state:    document.getElementById('co-state').value || 'SP',
+      zip_code: cepRaw || '01001000',
+    }
+  };
+
+  debugLog('Enviando para /api/pix: amount='+amountCents+' centavos');
+  debugLog('Payer: '+payload.payer.name+' | '+payload.payer.email);
+
+  fetch('/api/pix', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  })
+  .then(function(r){
+    debugLog('HTTP status: '+r.status);
+    return r.json().then(function(d){ return { status: r.status, data: d }; });
+  })
+  .then(function(res){
+    btn.disabled = false;
+    btn.textContent = 'Gerar PIX';
+
+    if(res.status !== 201){
+      debugLog('ERRO API: '+JSON.stringify(res.data), true);
+      alert('Erro ao gerar PIX: '+(res.data.error || JSON.stringify(res.data)));
+      return;
+    }
+
+    pixData = res.data;
+    debugLog('PIX criado! ID: '+pixData.id);
+    openPixModal(pixData, total);
+  })
+  .catch(function(e){
+    btn.disabled = false;
+    btn.textContent = 'Gerar PIX';
+    debugLog('FETCH ERROR: '+e.message, true);
+    alert('Erro de conexão. Verifique se o site está hospedado na Vercel.');
+  });
+}
+
+// ---------- Modal PIX ----------
+function openPixModal(data, total){
+  document.getElementById('pix-amount-display').textContent = fmt(total);
+
+  // QR Code
+  var qrImg = document.getElementById('pix-qr-img');
+  if(data.qr_code_image && data.qr_code_image.startsWith('data:')){
+    qrImg.src = data.qr_code_image;
+  } else if(data.qr_code_image){
+    qrImg.src = 'data:image/png;base64,' + data.qr_code_image;
+  } else if(data.qr_code){
+    // fallback: gera QR via API pública
+    qrImg.src = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(data.pix_copy_paste || data.qr_code);
+  } else {
+    document.getElementById('pix-qr').innerHTML = '<p style="font-size:11px;color:#aaa;padding:10px">QR Code indisponível</p>';
+  }
+
+  // Copia e cola
+  var copyInput = document.getElementById('pix-copy-input');
+  copyInput.value = data.pix_copy_paste || data.qr_code || '';
+
+  // Timer
+  if(data.expires_at){
+    startCountdown(new Date(data.expires_at));
+  }
+
+  // Polling status
+  startStatusPolling(data.id);
+
+  document.getElementById('pix-modal').classList.add('open');
+}
+
+function closePix(){
+  document.getElementById('pix-modal').classList.remove('open');
+  clearInterval(countdownInterval);
+  clearInterval(statusInterval);
+}
+
+function copyPix(){
+  var input = document.getElementById('pix-copy-input');
+  input.select();
+  document.execCommand('copy');
+  var btn = document.getElementById('pix-copy-btn');
+  btn.textContent = 'Copiado!';
+  setTimeout(function(){ btn.textContent = 'Copiar'; }, 2000);
+}
+
+function startCountdown(expiresAt){
+  clearInterval(countdownInterval);
+  countdownInterval = setInterval(function(){
+    var diff = Math.floor((expiresAt - new Date()) / 1000);
+    if(diff <= 0){
+      clearInterval(countdownInterval);
+      document.getElementById('pix-countdown').textContent = '00:00';
+      return;
+    }
+    var m = Math.floor(diff/60);
+    var s = diff % 60;
+    document.getElementById('pix-countdown').textContent =
+      (m<10?'0':'')+m+':'+(s<10?'0':'')+s;
+  }, 1000);
+}
+
+function startStatusPolling(id){
+  clearInterval(statusInterval);
+  var attempts = 0;
+  statusInterval = setInterval(function(){
+    attempts++;
+    if(attempts > 60){ clearInterval(statusInterval); return; } // max 5min
+
+    fetch('/api/pix-status?id='+id)
+      .then(function(r){ return r.json(); })
+      .then(function(d){
+        debugLog('Status poll: '+d.status);
+        if(d.status === 'paid'){
+          clearInterval(statusInterval);
+          clearInterval(countdownInterval);
+          var msg = document.getElementById('pix-status-msg');
+          msg.textContent = '✓ Pagamento confirmado!';
+          msg.className = 'pix-status-msg paid';
+          localStorage.removeItem('local_cart');
+          setTimeout(function(){
+            closePix();
+            document.querySelectorAll('.section').forEach(function(s){ s.classList.remove('active'); });
+            document.getElementById('co-success').style.display = 'block';
+          }, 2000);
+        } else if(d.status === 'expired'){
+          clearInterval(statusInterval);
+          var msg = document.getElementById('pix-status-msg');
+          msg.textContent = 'PIX expirado. Gere um novo.';
+          msg.className = 'pix-status-msg expired';
+        }
+      })
+      .catch(function(e){ console.log('Status poll error:', e.message); });
+  }, 5000); // a cada 5s
+}
+</script>
+</body>
+</html>

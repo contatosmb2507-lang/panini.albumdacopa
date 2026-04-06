@@ -1,0 +1,124 @@
+/* ============================================================
+   CARRINHO LOCAL
+   ============================================================ */
+
+/* Overlay */
+#lc-overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.45);
+  z-index: 9998;
+}
+#lc-overlay.open { display: block; }
+
+/* Drawer */
+#lc-drawer {
+  position: fixed;
+  top: 0; right: -420px;
+  width: 400px; max-width: 100vw;
+  height: 100%;
+  background: #fff;
+  z-index: 9999;
+  display: flex; flex-direction: column;
+  transition: right .3s ease;
+  box-shadow: -4px 0 20px rgba(0,0,0,.15);
+}
+#lc-drawer.open { right: 0; }
+
+.lc-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 18px 20px;
+  border-bottom: 1px solid #eee;
+  font-size: 18px; font-weight: 700;
+}
+#lc-close {
+  background: none; border: none;
+  font-size: 20px; cursor: pointer; color: #555;
+}
+
+#lc-items {
+  flex: 1; overflow-y: auto;
+  padding: 16px 20px;
+}
+
+.lc-empty { color: #888; text-align: center; margin-top: 40px; }
+
+.lc-item {
+  display: flex; gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+.lc-item img {
+  width: 64px; height: 80px;
+  object-fit: contain; border-radius: 4px;
+  background: #f8f8f8;
+}
+.lc-info {
+  flex: 1; display: flex; flex-direction: column; gap: 4px;
+}
+.lc-name { font-size: 13px; line-height: 1.3; color: #222; }
+.lc-price { font-size: 13px; color: #666; }
+.lc-qty {
+  display: flex; align-items: center; gap: 8px; margin-top: 4px;
+}
+.lc-qty-btn {
+  width: 26px; height: 26px;
+  border: 1px solid #ddd; border-radius: 4px;
+  background: #f5f5f5; cursor: pointer;
+  font-size: 16px; line-height: 1;
+}
+.lc-qty-btn:hover { background: #e0e0e0; }
+.lc-right {
+  display: flex; flex-direction: column;
+  align-items: flex-end; justify-content: space-between;
+}
+.lc-sub { font-weight: 700; font-size: 14px; color: #1a1a1a; }
+.lc-remove {
+  background: none; border: none;
+  color: #aaa; cursor: pointer; font-size: 14px;
+}
+.lc-remove:hover { color: #e00; }
+
+#lc-total {
+  padding: 14px 20px;
+  border-top: 1px solid #eee;
+  font-size: 16px; text-align: right;
+}
+
+.lc-footer {
+  padding: 16px 20px;
+  border-top: 1px solid #eee;
+}
+#lc-checkout-btn {
+  display: block; width: 100%;
+  background: #1a7a3c; color: #fff;
+  text-align: center; padding: 14px;
+  border-radius: 6px; font-size: 16px;
+  font-weight: 700; text-decoration: none;
+  transition: background .2s;
+}
+#lc-checkout-btn:hover { background: #155f2f; }
+
+/* Ícone carrinho no header */
+#lc-cart-icon {
+  position: relative;
+  background: none; border: none;
+  font-size: 24px; cursor: pointer;
+  margin-left: 12px; padding: 4px 8px;
+}
+#lc-badge {
+  position: absolute; top: -4px; right: -4px;
+  background: #e00; color: #fff;
+  border-radius: 50%; width: 18px; height: 18px;
+  font-size: 11px; font-weight: 700;
+  align-items: center; justify-content: center;
+}
+
+/* Feedback botão adicionado */
+.action.tocart.lc-added span::before {
+  content: '✓ ';
+}
+.action.tocart.lc-added {
+  background: #1a7a3c !important;
+  border-color: #1a7a3c !important;
+}
