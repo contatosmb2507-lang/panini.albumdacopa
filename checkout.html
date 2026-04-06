@@ -485,27 +485,27 @@ function submitOrder(){
 function openPixModal(data, total){
   document.getElementById('pix-amount-display').textContent = fmt(total);
 
-  // QR Code
+  console.log('[PIX DATA]', JSON.stringify(data));
+
+  // A Veno retorna o código PIX em qr_code_image (texto, não base64 de imagem)
+  var pixCode = data.pix_copy_paste || data.qr_code_image || data.qr_code || '';
+
+  // QR Code gerado via serviço externo com o código copia e cola
+  var qrEl  = document.getElementById('pix-qr');
   var qrImg = document.getElementById('pix-qr-img');
-  if(data.qr_code_image && data.qr_code_image.startsWith('data:')){
-    qrImg.src = data.qr_code_image;
-  } else if(data.qr_code_image){
-    qrImg.src = 'data:image/png;base64,' + data.qr_code_image;
-  } else if(data.qr_code){
-    // fallback: gera QR via API pública
-    qrImg.src = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(data.pix_copy_paste || data.qr_code);
+
+  if(pixCode){
+    qrImg.src = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&ecc=M&data=' + encodeURIComponent(pixCode);
+    qrImg.style.display = 'block';
   } else {
-    document.getElementById('pix-qr').innerHTML = '<p style="font-size:11px;color:#aaa;padding:10px">QR Code indisponível</p>';
+    qrEl.innerHTML = '<p style="font-size:12px;color:#aaa;padding:20px">QR Code indisponível</p>';
   }
 
   // Copia e cola
-  var copyInput = document.getElementById('pix-copy-input');
-  copyInput.value = data.pix_copy_paste || data.qr_code || '';
+  document.getElementById('pix-copy-input').value = pixCode;
 
   // Timer
-  if(data.expires_at){
-    startCountdown(new Date(data.expires_at));
-  }
+  if(data.expires_at) startCountdown(new Date(data.expires_at));
 
   // Polling status
   startStatusPolling(data.id);
